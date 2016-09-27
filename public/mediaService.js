@@ -1,7 +1,7 @@
 angular.module('mediaService', [])
   .factory('media', function($http) {
 
-    var baseUrl = 'http://localhost:8000'
+    //var baseUrl = 'http://174.89.153.165:8000'
 
     var mediaService = {
       getAllSongs: function() {

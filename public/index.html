@@ -19,6 +19,20 @@
       right: 0px;
     }
 
+    .title {
+          border-bottom: solid white 1px;
+    padding-bottom: 5px;
+    }
+
+    .table {
+      width: 100%;
+    }
+
+    .table-head {
+          font-family: monospace;
+    font-size: 18px;
+    }
+
     .nextprev {
       height: 22px;
       cursor: pointer;
@@ -43,6 +57,27 @@
       color: orange;
     }
 
+    .trackInfo {
+      margin-bottom: 25px;
+      height: 70px;
+    }
+
+    .trackInfo-title {
+      font-size: 26px;
+      font-weight: bold;
+      margin: 0;
+      margin-bottom: 7px;
+    }
+
+    .trackInfo-artist {
+      margin: 0px;
+      font-size: 17px;
+    }
+
+    .trackInfo-album {
+      margin: 0px;
+    }
+
     .library {
       padding: 1%;
       overflow-y: scroll;
@@ -61,11 +96,11 @@
   </style>
 </head>
 <body ng-app="khalilsMediaPlayer">
-  <h3>Khalil's Library</h3>
+  <h3 class="title">Khalil's Library</h3>
   <div class="main" ng-controller="MainController">
     <div class="library">
-      <table>
-      <thead>
+      <table class="table">
+      <thead class="table-head">
         <tr>
           <td>Title</td>
           <td>Artist</td>
@@ -82,29 +117,23 @@
     </table>
     </div>
     <div class="control">
-      <h1>{{ player.nowPlaying.title }}</h1>
-      <h3>{{ player.nowPlaying.artist }}</h3>
-      <h3>{{ player.nowPlaying.album }}</h3>
+      <div class="trackInfo">
+        <p class="trackInfo-title">{{ player.nowPlaying.title }}</p>
+        <p class="trackInfo-artist">{{ player.nowPlaying.artist }}</p>
+        <p class="trackInfo-album">{{ player.nowPlaying.album }}</p>
+      </div>
       <!--<p>Current Time: {{ currentTime }}</p>-->
       <!--<p>Now Playing: {{ player.nowPlaying }}</p>-->
+      <img style="width:100%" ng-src="{{player.nowPlaying.albumArt}}"></img>
 
       <div class="player-buttons">
-        <img ng-click="previousSong()" class="nextprev prev" src="/images/prev.png"></img>
+        <img ng-click="prevSong()" class="nextprev prev" src="/images/prev.png"></img>
         <div ng-switch="player.status">
           <img ng-switch-when="0" ng-click="playPause()" class="nextprev" src="/images/play.png"></img>
           <img ng-switch-when="1" ng-click="playPause()" class="nextprev" src="/images/pause.png"></img>
         </div>
         <img ng-click="nextSong()" class="nextprev" src="/images/next.png"></img>
       </div>
-
-      
-     
-      
-      
-
-      
-
-
 
       <img id="npImg"></img>
     </div>
@@ -114,6 +143,7 @@
   <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.6/angular.min.js"></script>
 
   <!-- Custom JS Libraries-->
+  <script src="/config.js"></script>
   <script src="/audioService.js"></script>
   <script src="/mediaService.js"></script>
   <script src="/app.js"></script>

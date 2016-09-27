@@ -1,26 +1,38 @@
 
 app = angular.module('khalilsMediaPlayer', ['mediaService', 'audioService'])
-  .controller('MainController', function($scope, media, playerCtrl) {
+  .controller('MainController', function($scope, media, playerCtrl, $timeout) {
 
     // ================ INSTANCE VARIABLES =================== //
 
     $scope.library = []
     $scope.player = {
       nowPlaying: {},
-      status: 0
+      status: 0,
+      albumArt: ''
     }
 
     media.getAllSongs()
       .then(function(result) {
         var index = 0;
         $scope.library = result.data.songs.map(function(song) {
-          song.index = index;
-          index++;
-          return song;
+          if(song.title !== "null") {
+            song.index = index;
+            index++;
+            return song;
+          }
         })
       })
 
     // ================ Methods =================== //
+
+    function find (index) {
+        for(var i = 0; i < $scope.library.length; i++) {
+          if($scope.library[i].index == index) {
+            return $scope.library[i];
+          }
+        }
+        return false;
+      }
 
     /**
       * selectSong
@@ -35,23 +47,10 @@ app = angular.module('khalilsMediaPlayer', ['mediaService', 'audioService'])
     $scope.selectSong = function(song) {
       $scope.player.nowPlaying = song
 
-      media.getAlbumArt(song._id)
-        .then(function(result) {
-          console.log(result)
-          // var imageType = result.headers('Content-Type')
+      // Set album artwork
+      $scope.player.nowPlaying.albumArt = baseUrl + '/song/img/' + song._id;
 
-          // var arrayBuffer = toArrayBuffer(result.data);
-          // var bytes = new Uint8Array(arrayBuffer);
-
-          // var blob = new Blob([bytes], {type: imageType});
-          // var urlCreator = window.URL || window.webkitURL;
-          // var imageUrl = urlCreator.createObjectURL(blob);
-
-          // var image = document.getElementById('npImg');
-          // image.src = imageUrl;
-
-        })
-
+      // Get media stream
       media.getSongStream(song._id)
         .then(function(result) {
           playerCtrl.initAndPlay(result.data, onEnd)
@@ -87,25 +86,72 @@ app = angular.module('khalilsMediaPlayer', ['mediaService', 'audioService'])
 
     $scope.nextSong = function() {
       var newSongIndex = $scope.player.nowPlaying.index + 1;
-      $scope.player.nowPlaying = findNext(newSongIndex);
+      $scope.player.nowPlaying = find(newSongIndex);
       
       media.getSongStream($scope.player.nowPlaying._id)
         .then(function(result) {
           playerCtrl.initAndPlay(result.data, onEnd)
         })
+    }
 
-      function findNext (index) {
-        for(var i = 0; i < $scope.library.length; i++) {
-          if($scope.library[i].index == index) {
-            return $scope.library[i];
-          }
+    /**
+      * prevSong
+      * 
+      * Stops the current song and proceeds to play the next song in the current
+      * list.
+      *   @param void
+    */
+
+    var holdPrev = false;
+    var holdTimeoutPromise = null;
+
+    var firePreviousHoldTime = function() {
+      holdTimeoutPromise = $timeout(function() {
+        //console.log("Now, we won't go back.")
+        holdPrev = false;
+      }, 2000)
+    }
+
+
+    $scope.prevSong = function() {
+
+      if(holdPrev) {
+        // Next btn press received before HoldPrev Timer, proceed to set previous song
+        $timeout.cancel(holdTimeoutPromise)
+        holdPrev = false;
+        setPrevious()
+
+      } else {
+        // Fire off HoldPrev Timer
+        holdPrev = true;
+        firePreviousHoldTime();
+
+        // Restart Song
+        playerCtrl.restart();
+      }
+
+      function setPrevious () {
+        var newSongIndex = $scope.player.nowPlaying.index - 1;
+        if(newSongIndex >= 0) {
+          $scope.player.nowPlaying = find(newSongIndex);
+
+          media.getSongStream($scope.player.nowPlaying._id)
+            .then(function(result) {
+              playerCtrl.initAndPlay(result.data, onEnd)
+            })
         }
-        return false;
       }
     }
 
-  function onEnd() {
-    $scope.nextSong();
-  }
+    /**
+      * onEnd
+      * 
+      * Simply calls nextSong() as a callback for when a song ends at any point.
+      * @param void
+    */
+
+    function onEnd() {
+      $scope.nextSong();
+    }
 
   })
