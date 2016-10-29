@@ -20,8 +20,8 @@
     }
 
     .title {
-          border-bottom: solid white 1px;
-    padding-bottom: 5px;
+      border-bottom: solid white 1px;
+      padding-bottom: 5px;
     }
 
     .table {
@@ -29,8 +29,8 @@
     }
 
     .table-head {
-          font-family: monospace;
-    font-size: 18px;
+      font-family: monospace;
+      font-size: 18px;
     }
 
     .nextprev {
@@ -39,7 +39,7 @@
       margin-left: 19px;
     }
 
-        .prev {
+    .prev {
       position: relative;
       left: -7px;
     }
@@ -108,7 +108,7 @@
         </tr>
       </thead>
       <tbody>
-        <tr ng-repeat="song in library" class="list-songs" ng-click="selectSong(song)">
+        <tr ng-repeat="song in library track by $index" class="list-songs" ng-click="selectSong(song)">
           <td>{{song.title}}</td>
           <td>{{song.artist}}</td>
           <td>{{song.album}}</td>

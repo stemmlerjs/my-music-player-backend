@@ -1,7 +1,4 @@
 
-
-
-
 angular.module('audioService', [])
   .factory('playerCtrl', function($http) {
 

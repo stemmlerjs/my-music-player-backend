@@ -15,7 +15,7 @@ app = angular.module('khalilsMediaPlayer', ['mediaService', 'audioService'])
       .then(function(result) {
         var index = 0;
         $scope.library = result.data.songs.map(function(song) {
-          if(song.title !== "null") {
+          if(song.title !== "null" ) {
             song.index = index;
             index++;
             return song;
