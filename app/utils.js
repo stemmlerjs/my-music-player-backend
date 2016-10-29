@@ -10,6 +10,7 @@ module.exports = {
         // Add this file to the list of files
         var filePath = root + '/' + stat.name;
         accumulateMusicInfo(filePath, function(info) {
+          console.log(info.track + " - " + info.artist + " - " + info.album)
           info.path = filePath;
           files.push(info);
           next();
