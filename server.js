@@ -2,8 +2,6 @@
 var fs = require('fs');
 
 var express = require('express')
-var mongoose = require('mongoose');
-mongoose.connect('mongodb://localhost/mediacenter');
 var morgan = require('morgan')
 var color = require('color')
 var path = require('path')

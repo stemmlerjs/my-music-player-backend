@@ -1,33 +1,65 @@
+
 var exec = require('child_process').exec;
 var colors = require('colors')
+var mongoose = require('mongoose')
 
-var mongoProcess = exec('mongod');
+var mongoProcess = exec('mongod')
+
+var initialBootstrap = new Promise(function(resolve, reject) {
+  attachProcessListeners()
+  .then(connectMongooseToMongo)
+  .then(resolve)
+  .catch(attachProcessListeners)
+})
 
 /*
  * we can attach event listeners to the child process that executes
  * mongod here. Pretty awesome actually.
  */
 
-function attachProcessListeners(_process) {
-  var events = {
-    onMongoData: function(data) {
-      console.log(colors.yellow('[MONGO] stdout: ' + data));
-    },
-    onMongoError: function(data) {
-      console.log('[MONGO] stdout: ' + data);
-    },
-    onMongoClose: function(code) {
-      console.log(colors.red('[MONGO] closing code: ' + code));
-    }
-  }
+function attachProcessListeners () {
+  return new Promise(function(resolve, reject) {
 
-  mongoProcess.stdout.on('data', events.onMongoData);
-  mongoProcess.stderr.on('data', events.onMongoError);
-  mongoProcess.on('close', events.onMongoClose);
-  return _process;
+    var events = {
+      onMongoData: function(data) {
+        console.log(colors.yellow('[MONGO] stdout: ' + data))
+        if(data.indexOf("waiting for connections") != -1) {
+          console.log("=========================== MONGO DB STARTED =========================".green)
+          resolve()
+        }
+      },
+      onMongoError: function(data) {
+        console.log('[MONGO] stdout: ' + data)
+        reject()
+      },
+      onMongoClose: function(code) {
+        console.log(colors.red('[MONGO] closing code: ' + code))
+      }
+    }
+
+    mongoProcess.stdout.on('data', events.onMongoData)
+    mongoProcess.stderr.on('data', events.onMongoError)
+    mongoProcess.on('close', events.onMongoClose)
+  })
 }
 
-module.exports = mongoProcess = attachProcessListeners(mongoProcess)
+function connectMongooseToMongo () {
+  return new Promise (function (resolve, reject) {
+    mongoose.connect('mongodb://localhost/mediacenter')
+
+    mongoose.connection.on('connected', function () {  
+      console.log("=========================== MONGOOSE CONNECTED =========================".green)
+      resolve()
+    }); 
+    mongoose.connection.on('error', function () {  
+      console.log("=========================== MONGOOSE ERROR =========================".red)
+      reject()
+    }); 
+  })
+}
+
+module.exports = initialBootstrap
+
 
 
 

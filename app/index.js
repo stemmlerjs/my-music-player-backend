@@ -12,18 +12,16 @@
 
   var inquirer = require('inquirer');
   var utils = require('./utils')
-
-  // We initialize MongoDB through this require
-  var config = require('./config')
-
+  var config = require('./config')      
   var Songs = require('./models').Song
+
   var appActionChoices = ['Start as usual', 'Bulk Migrate', 'Delete All Files'];
 
  /**
   * We start the main cli application 2 seconds later to give time for MongoDB's setup output to display first.
   */
 
-  setTimeout(mainAppConsole, 2000)
+  config.ready(mainAppConsole)
 
  /**
   * mainAppConsole()
