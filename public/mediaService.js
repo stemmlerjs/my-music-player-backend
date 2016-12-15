@@ -1,4 +1,5 @@
 angular.module('mediaService', [])
+  
   .factory('media', function($http) {
 
     //var baseUrl = 'http://174.89.153.165:8000'
