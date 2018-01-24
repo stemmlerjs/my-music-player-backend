@@ -1,0 +1,9 @@
+
+# Media Server Config
+
+# This is the absolute file path that our app looks at for all files to add to the mongodb database.
+
+media_home: D:\iTunes Music Library\Music\Sonic Youth
+
+mongodb:
+  connection_string: mongodb://localhost/mediacenter

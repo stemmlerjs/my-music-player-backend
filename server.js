@@ -33,8 +33,3 @@ function initLogging() {
   // setup the logger
   app.use(morgan('combined', {stream: accessLogStream}))
 }
-
-// PAGES
-// - Main
-// - Admin Page
-// - File View

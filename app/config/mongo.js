@@ -2,6 +2,7 @@
 var exec = require('child_process').exec;
 var colors = require('colors')
 var mongoose = require('mongoose')
+const config = require('config-yml');
 
 var mongoProcess = exec('mongod')
 
@@ -45,7 +46,7 @@ function attachProcessListeners () {
 
 function connectMongooseToMongo () {
   return new Promise (function (resolve, reject) {
-    mongoose.connect('mongodb://localhost/mediacenter')
+    mongoose.connect(config.mongodb.connection_string)
 
     mongoose.connection.on('connected', function () {  
       console.log("=========================== MONGOOSE CONNECTED =========================".green)
@@ -58,7 +59,9 @@ function connectMongooseToMongo () {
   })
 }
 
-module.exports = initialBootstrap
+module.exports = {
+  init: initialBootstrap
+}
 
 
 

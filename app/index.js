@@ -1,3 +1,4 @@
+
 /**
  * This is the command line interface to perform common actions that need to happen
  * for the maintainence and development like "Adding all files to the Database" or 
@@ -15,84 +16,82 @@
   var config = require('./config')      
   var Songs = require('./models').Song
 
-  var appActionChoices = ['Start as usual', 'Bulk Migrate', 'Delete All Files'];
+  class App {
 
- /**
-  * We start the main cli application 2 seconds later to give time for MongoDB's setup output to display first.
-  */
-
-  config.ready(mainAppConsole)
-
- /**
-  * mainAppConsole()
-  *
-  * The Main CLI Application.
-  * Through this, we should be able to perform the majority of the maintainence tasks to start the app, add an remove things.
-  * 
-  * @params choiceCut - We may wish to only show specific choices. TODO: implement differently.
-  *
-  */
-
-  function mainAppConsole(choiceCut) { 
-    if (choiceCut == undefined) choiceCut = 0
+    constructor(songs) {
+      this.started = false;
+      this.actions = {
+        BULK_MIGRATE: 'BULK_MIGRATE',
+        DELETE_ALL: 'DELETE_ALL'
+      }
+    }
 
    /**
-    * Prompt the user for which action to perform.
+    * insertFiles()
+    *
+    * Insert all the files acquired from walking the tree at the MEDIA_HOME folder
+    * 
+    * @params files [] - array of files to insert
     */
 
-    inquirer.prompt([{
-      type: 'list',
-      name: 'action',
-      message: 'What do you want to do?',
-      choices: appActionChoices.slice(0, appActionChoices.length - choiceCut),
-      filter: function (val) {
-        return val.toLowerCase();
-      }
-    }])
-    .then(function (option) {
+    handleFiles(files) {
+      Songs.collection.insert(files, function(err, docs) {
+        if(err) {
+          console.log("FAILURE: ", err)
+        } else {
+          console.log("SUCCESS:", docs)
+        }
+      })
+    }
 
-    /**
-      * Prompt the user for which action to perform.
-      */
+    prompt () {
+      return inquirer.prompt(
+        [{
+          type: 'list',
+          name: 'action',
+          message: 'What do you want to do next?',
+          choices: Object.keys(this.actions).map((option) => {
+            return option.toString()
+          }),
+          filter: function (val) {
+            return val.toUpperCase();
+          }
+        }]
+      )
+    }
 
+    perform (option) {
+      return new Promise((resolve, reject) => {
         switch(option.action) {
-          case "start as usual":
-            console.log("kk :)")
-            return;
-          case "bulk migrate":
+          case this.actions.BULK_MIGRATE:
             console.log("Performing bulk migrate. Grabbing all files from folder '" + config.MEDIA_HOME + "' to place in DB.")
-            utils.getAllFilesInFolder(config.MEDIA_HOME, handleFiles);
+            utils.getAllFilesInFolder(config.MEDIA_HOME, this.handleFiles);
             return;
-          case "delete all files":
+          case this.actions.DELETE_ALL:
             console.log("Deleting all files from Database.")
             Songs.remove({}, function() {
               console.log("Done.")
-              mainAppConsole(1);
+              resolve();
             })
             return;
           default:
             return;
         }
-    });
-  }
+      })
+    }
 
- /**
-  * insertFiles()
-  *
-  * Insert all the files acquired from walking the tree at the MEDIA_HOME folder
-  * 
-  * @params files [] - array of files to insert
-  */
-
-  function handleFiles(files) {
-    Songs.collection.insert(files, function(err, docs) {
-      if(err) {
-        console.log("FAILURE: ", err)
-      } else {
-        console.log("SUCCESS:", docs)
+    async run () {
+      while(true) {
+        debugger;
+        var option = await this.prompt();
+        var isFinished = await this.perform(option);
       }
-    })
+    }
   }
+
+
+  const appInstance = new App();
+  config.onReady(appInstance.run.bind(appInstance))
 
 
 

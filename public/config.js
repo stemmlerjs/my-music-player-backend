@@ -1,1 +1,2 @@
-baseUrl = 'http://10.14.193.74:8000'
+
+baseUrl = 'http://localhost:8000'
