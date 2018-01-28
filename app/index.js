@@ -11,7 +11,6 @@
  * @requires [inquirer]
  */
 
-  var inquirer = require('inquirer');
   var utils = require('./utils')
   var config = require('./config')      
   var Songs = require('./models').Song
@@ -20,10 +19,7 @@
 
     constructor(songs) {
       this.started = false;
-      this.actions = {
-        BULK_MIGRATE: 'BULK_MIGRATE',
-        DELETE_ALL: 'DELETE_ALL'
-      }
+      this.actions = utils.inquirer.actions;
     }
 
    /**
@@ -45,19 +41,7 @@
     }
 
     prompt () {
-      return inquirer.prompt(
-        [{
-          type: 'list',
-          name: 'action',
-          message: 'What do you want to do next?',
-          choices: Object.keys(this.actions).map((option) => {
-            return option.toString()
-          }),
-          filter: function (val) {
-            return val.toUpperCase();
-          }
-        }]
-      )
+      return utils.inquirer.prompt();
     }
 
     perform (option) {
@@ -65,7 +49,7 @@
         switch(option.action) {
           case this.actions.BULK_MIGRATE:
             console.log("Performing bulk migrate. Grabbing all files from folder '" + config.MEDIA_HOME + "' to place in DB.")
-            utils.getAllFilesInFolder(config.MEDIA_HOME, this.handleFiles);
+            utils.files.getAllFilesInFolder(config.MEDIA_HOME, this.handleFiles);
             return;
           case this.actions.DELETE_ALL:
             console.log("Deleting all files from Database.")

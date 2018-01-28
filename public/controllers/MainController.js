@@ -1,4 +1,5 @@
-app.controller('MainController', function($scope, media, playerCtrl, $timeout) {
+
+function MainController ($scope, media, playerCtrl, $timeout) {
 
     // ================ INSTANCE VARIABLES =================== //
 
@@ -21,16 +22,21 @@ app.controller('MainController', function($scope, media, playerCtrl, $timeout) {
         })
       })
 
-    // ================ Methods =================== //
+    /*
+     * find 
+     * 
+     * Find the song with the particular index. 
+     * @param {Number} 
+     */
 
     function find (index) {
-        for(var i = 0; i < $scope.library.length; i++) {
-          if($scope.library[i].index == index) {
-            return $scope.library[i];
-          }
+      for(var i = 0; i < $scope.library.length; i++) {
+        if($scope.library[i].index == index) {
+          return $scope.library[i];
         }
-        return false;
       }
+      return false;
+    }
 
     /**
       * selectSong
@@ -152,4 +158,6 @@ app.controller('MainController', function($scope, media, playerCtrl, $timeout) {
       $scope.nextSong();
     }
 
-  })
+  }
+
+app.controller('MainController', MainController)
