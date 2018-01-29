@@ -21,6 +21,7 @@
     "color": "^0.11.3",
     "colors": "^1.1.2",
     "config-yml": "^0.8.0",
+    "cors": "^2.8.4",
     "express": "^4.14.0",
     "file-stream-rotator": "0.0.7",
     "id3js": "^1.1.3",

@@ -6,9 +6,12 @@ var morgan = require('morgan')
 var color = require('color')
 var path = require('path')
 var FileStreamRotator = require('file-stream-rotator')
+var cors = require('cors')
 
 // Startup Express, Logging and MongoDB
 var app = express()
+app.use(cors())
+
 app.listen(8000)
 app.use(express.static(__dirname + '/public'));
 initLogging()

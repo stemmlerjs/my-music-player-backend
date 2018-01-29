@@ -8,7 +8,7 @@ module.exports = function(app) {
   /* Serve the index.html page
   */
   app.get('/', function(req, res) {
-  res.sendFile(path.join(__dirname + '/public/index.html'))
+    res.sendFile(path.join(__dirname + '/public/index.html'))
   })
 
   app.get('/stream', function(req, res) {
@@ -34,7 +34,10 @@ module.exports = function(app) {
         })
       } else {
         // Get image
-        id3({ file: doc.path , type: id3.OPEN_LOCAL }, function(err, tags) {
+
+        var config = { file: doc.path , type: id3.OPEN_LOCAL }
+
+        id3(config, function(err, tags) {
           if(tags.v2.image) {
             res.contentType(tags.v2.image.mime);
             var bufferedImage = toBuffer(tags.v2.image.data)
